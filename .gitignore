@@ -1,0 +1,46 @@
+# node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# HBuilderX/uni-app
+unpackage/
+dist/
+build/
+*.log
+.DS_Store
+*.local
+*.tmp
+*.bak
+*.swp
+
+# Android/iOS build
+platforms/
+android/
+output/
+*.apk
+*.keystore
+
+# IDE
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Env
+.env.local
+.env.*.local
+
+# Others
+*.iml
+
+# 生产环境静态资源
+/static/
+!/static/icons/ 
