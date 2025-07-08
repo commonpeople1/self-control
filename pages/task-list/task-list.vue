@@ -1,9 +1,16 @@
 <template>
   <view class="task-list-page">
     <view class="header">
-      <text class="title">任务列表</text>
+      <view class="header-top">
+        <text class="title">任务列表</text>
+        <view class="score-display">
+          <text class="score-label">积分:</text>
+          <text class="score-value">{{ score }}</text>
+        </view>
+      </view>
       <view class="actions">
         <button class="add-btn" @click="showAdd = true">添加任务</button>
+        <button class="reset-btn" @click="handleResetTasks">重置任务</button>
         <button class="delete-btn" :disabled="!checkedIds.length" @click="handleDeleteTasks">删除</button>
       </view>
     </view>
@@ -17,7 +24,9 @@
         :detail="task.detail"
         :score="task.score"
         :checked="checkedIds.includes(task.id)"
+        :completed="task.completed"
         @update:checked="val => toggleCheck(task.id, val)"
+        @toggleComplete="handleToggleComplete(task.id)"
       />
       <view v-if="!tasks.length" class="empty">暂无任务，请添加</view>
     </view>
@@ -56,6 +65,7 @@
 <script setup lang="js">
 import { ref, reactive } from 'vue';
 import { useTaskList } from '@/composables/useTaskList.js';
+import { useScore } from '@/composables/useScore.js';
 import TaskItem from '@/components/TaskItem.vue';
 import IconPickerDialog from '@/components/IconPickerDialog.vue';
 
@@ -77,7 +87,13 @@ const iconCategoryList = [
     icons: ['/static/icons/icon4.png', '/static/icons/icon5.png']
   }
 ];
-const { tasks, addTask, removeTasks } = useTaskList();
+
+// 初始化积分管理
+const { score, addScore, subtractScore } = useScore();
+
+// 初始化任务列表，传入积分管理器
+const { tasks, addTask, removeTasks, toggleTaskComplete, resetAllTasks } = useTaskList({ addScore, subtractScore });
+
 const checkedIds = ref([]);
 const showAdd = ref(false);
 const showIconPicker = ref(false);
@@ -87,6 +103,7 @@ const form = reactive({
   detail: '',
   score: 1
 });
+
 function toggleCheck(id, checked) {
   if (checked) {
     if (!checkedIds.value.includes(id)) checkedIds.value.push(id);
@@ -94,6 +111,7 @@ function toggleCheck(id, checked) {
     checkedIds.value = checkedIds.value.filter(i => i !== id);
   }
 }
+
 function handleAddTask() {
   addTask({
     id: Date.now(),
@@ -105,12 +123,34 @@ function handleAddTask() {
   showAdd.value = false;
   Object.assign(form, { icon: '', name: '', detail: '', score: 1 });
 }
+
 function handleDeleteTasks() {
   removeTasks(checkedIds.value);
   checkedIds.value = [];
 }
+
 function onSelectIcon(icon) {
   form.icon = icon;
+}
+
+function handleToggleComplete(taskId) {
+  toggleTaskComplete(taskId);
+}
+
+function handleResetTasks() {
+  uni.showModal({
+    title: '确认重置',
+    content: '确定要重置所有任务状态吗？此操作不会影响积分。',
+    success: (res) => {
+      if (res.confirm) {
+        resetAllTasks();
+        uni.showToast({
+          title: '任务已重置',
+          icon: 'success'
+        });
+      }
+    }
+  });
 }
 </script>
 
@@ -119,19 +159,40 @@ function onSelectIcon(icon) {
   min-height: 100vh;
   background: #f7f8fa;
   .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     padding: 32rpx 24rpx 0 24rpx;
-    .title {
-      font-size: 44rpx;
-      font-weight: bold;
-      color: #222;
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24rpx;
+      .title {
+        font-size: 44rpx;
+        font-weight: bold;
+        color: #222;
+      }
+      .score-display {
+        display: flex;
+        align-items: center;
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        padding: 12rpx 20rpx;
+        border-radius: 20rpx;
+        box-shadow: 0 2rpx 8rpx rgba(0,122,255,0.15);
+        .score-label {
+          font-size: 24rpx;
+          color: #fff;
+          margin-right: 8rpx;
+        }
+        .score-value {
+          font-size: 32rpx;
+          font-weight: bold;
+          color: #fff;
+        }
+      }
     }
     .actions {
       display: flex;
       gap: 20rpx;
-      .add-btn, .delete-btn {
+      .add-btn, .delete-btn, .reset-btn {
         padding: 0 32rpx;
         height: 64rpx;
         border-radius: 32rpx;
@@ -142,6 +203,11 @@ function onSelectIcon(icon) {
       .add-btn {
         background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
         color: #fff;
+      }
+      .reset-btn {
+        background: #fff3e0;
+        color: #ff9800;
+        border: 2rpx solid #ff9800;
       }
       .delete-btn {
         background: #fff0f0;

@@ -20,11 +20,24 @@
 			}
 		},
 		{
+			"path": "pages/mall-manage/mall-manage",
+			"style": {
+				"navigationBarTitleText": "商城管理"
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "uni-app"
 			}
+		},
+		{
+			"path": "pages/backpack/backpack",
+			"style": {
+				"navigationBarTitleText": "奖励背包"
+			}
 		}
+		
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
@@ -42,20 +55,20 @@
 			{
 				"pagePath": "pages/task-list/task-list",
 				"text": "任务列表",
-				"iconPath": "",
-				"selectedIconPath": ""
+				"iconPath": "static/pngs/task.png",
+				"selectedIconPath": "static/pngs/task-active.png"
 			},
 			{
 				"pagePath": "pages/score-mall/score-mall",
 				"text": "积分商城",
-				"iconPath": "",
-				"selectedIconPath": ""
+				"iconPath": "static/pngs/shop.png",
+				"selectedIconPath": "static/pngs/shop-active.png"
 			},
 			{
 				"pagePath": "pages/profile/profile",
 				"text": "个人中心",
-				"iconPath": "",
-				"selectedIconPath": ""
+				"iconPath": "static/pngs/user.png",
+				"selectedIconPath": "static/pngs/user-active.png"
 			}
 		]
 	}
