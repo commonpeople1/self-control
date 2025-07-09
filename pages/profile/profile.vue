@@ -32,7 +32,7 @@
         <view class="menu-arrow">></view>
       </view>
       
-      <view class="menu-item">
+      <view class="menu-item" @click="goToStatistics">
         <view class="menu-icon">📊</view>
         <view class="menu-info">
           <text class="menu-title">统计</text>
@@ -59,6 +59,23 @@ function goToBackpack() {
 function goToMallManage() {
   uni.navigateTo({
     url: '/pages/mall-manage/mall-manage'
+  });
+}
+
+function goToStatistics() {
+  console.log('点击统计按钮');
+  uni.navigateTo({
+    url: '/pages/statistics/statistics',
+    success: () => {
+      console.log('跳转成功');
+    },
+    fail: (err) => {
+      console.error('跳转失败:', err);
+      uni.showToast({
+        title: '页面跳转失败',
+        icon: 'none'
+      });
+    }
   });
 }
 </script>

@@ -1,4 +1,5 @@
 import { ref, watch } from 'vue'
+import { useStatistics } from './useStatistics.js'
 
 const STORAGE_KEY = 'my_tasks'
 const LAST_RESET_KEY = 'last_reset_date'
@@ -11,6 +12,9 @@ export function useTaskList(scoreManager) {
   if (instance) {
     return instance
   }
+
+  // 初始化统计功能
+  const { recordTaskCompletion } = useStatistics()
 
   // 初始化时从本地读取
   const tasks = ref(uni.getStorageSync(STORAGE_KEY) || [])
@@ -43,10 +47,15 @@ export function useTaskList(scoreManager) {
   // 增删查改方法
   function addTask(task) {
     console.log('添加任务:', task)
-    tasks.value.push({
+    const newTask = {
       ...task,
       completed: false // 默认未完成
-    })
+    }
+    tasks.value.push(newTask)
+    
+    // 记录新任务到统计历史（初始状态为未完成）
+    recordTaskCompletion(task.id, task.name, task.score, false)
+    console.log('任务已添加到统计历史')
   }
   function removeTasks(ids) {
     console.log('删除任务:', ids)
@@ -60,6 +69,9 @@ export function useTaskList(scoreManager) {
     if (task) {
       const wasCompleted = task.completed
       task.completed = !task.completed
+      
+      // 记录统计信息
+      recordTaskCompletion(taskId, task.name, task.score, task.completed)
       
       // 处理积分变化
       if (scoreManager) {
