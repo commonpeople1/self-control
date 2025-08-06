@@ -4,8 +4,6 @@
       <text class="title">{{ t('task.title') }}</text>
       <view class="header-actions">
         <button class="add-btn" @click="showAdd = true">{{ t('task.addTask') }}</button>
-        <!-- 测试tabBar更新按钮 -->
-        <button class="test-tabbar-btn" @click="testTabBarUpdate">测试TabBar</button>
       </view>
     </view>
     
@@ -233,16 +231,6 @@ function handleResetTasks() {
   });
 }
 
-// 测试tabBar更新
-function testTabBarUpdate() {
-  console.log('测试tabBar更新')
-  forceUpdateTabBar()
-  
-  uni.showToast({
-    title: '已尝试更新tabBar',
-    icon: 'success'
-  })
-}
 </script>
 
 <style lang="scss" scoped>

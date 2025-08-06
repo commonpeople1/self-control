@@ -5,7 +5,10 @@ yarn-debug.log*
 yarn-error.log*
 
 # HBuilderX/uni-app
-unpackage/
+unpackage/*
+!unpackage/res/
+!unpackage/res/icons/
+!unpackage/res/icons/*
 dist/
 build/
 *.log
@@ -41,6 +44,3 @@ Thumbs.db
 # Others
 *.iml
 
-# 生产环境静态资源
-/static/
-!/static/icons/ 

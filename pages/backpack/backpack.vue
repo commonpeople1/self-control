@@ -6,7 +6,6 @@
     <view class="content">
       <!-- 测试按钮 -->
       <view class="test-section">
-        <button class="test-btn" @click="addTestItem">添加测试物品</button>
         <text class="test-tip">点击添加测试物品到背包</text>
       </view>
       
@@ -68,22 +67,6 @@ function handleUse(id) {
   });
 }
 
-// 添加测试物品
-function addTestItem() {
-  const testItem = {
-    id: Date.now(),
-    name: '测试奖励',
-    description: '这是一个测试奖励物品',
-    icon: '/static/icons/icon4.png',
-    count: 1
-  };
-  
-  addToBackpack(testItem);
-  uni.showToast({
-    title: '测试物品已添加到背包',
-    icon: 'success'
-  });
-}
 </script>
 
 <style lang="scss" scoped>

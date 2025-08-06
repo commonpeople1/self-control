@@ -49,15 +49,7 @@
         <view class="menu-arrow">></view>
       </view>
       
-      <!-- 测试tabBar更新按钮 -->
-      <view class="menu-item" @click="testTabBarUpdate">
-        <view class="menu-icon">🧪</view>
-        <view class="menu-info">
-          <text class="menu-title">测试TabBar更新</text>
-          <text class="menu-desc">点击测试tabBar文本更新</text>
-        </view>
-        <view class="menu-arrow">></view>
-      </view>
+
     </view>
   </view>
 </template>
@@ -142,16 +134,6 @@ function goToStatistics() {
   });
 }
 
-// 测试tabBar更新
-function testTabBarUpdate() {
-  console.log('测试tabBar更新')
-  forceUpdateTabBar()
-  
-  uni.showToast({
-    title: '已尝试更新tabBar',
-    icon: 'success'
-  })
-}
 </script>
 
 <style lang="scss" scoped>

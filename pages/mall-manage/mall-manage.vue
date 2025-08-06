@@ -17,17 +17,17 @@
       <view class="category-list">
         <view 
           v-for="category in categories" 
-          :key="category.id"
+          :key="category"
           class="category-item"
         >
           <view class="category-info">
-            <text class="category-name">{{ category.name }}</text>
-            <text class="reward-count">{{ getRewardsByCategory(category.name).length }} {{ t('mall.rewardCount') }}</text>
+            <text class="category-name">{{ category }}</text>
+            <text class="reward-count">{{ getRewardsByCategory(category).length }} {{ t('mall.rewardCount') }}</text>
           </view>
           <view class="category-actions">
-            <button class="view-rewards-btn" @click="viewCategoryRewards(category.name)">{{ t('mall.rewardList') }}</button>
-            <button class="edit-btn" @click="handleEditCategory(category.name)">{{ t('mall.editCategory') }}</button>
-            <button class="delete-btn" @click="handleDeleteCategory(category.id)">{{ t('mall.deleteCategory') }}</button>
+            <button class="view-rewards-btn" @click="viewCategoryRewards(category)">{{ t('mall.rewardList') }}</button>
+            <button class="edit-btn" @click="handleEditCategory(category)">{{ t('mall.editCategory') }}</button>
+            <button class="delete-btn" @click="handleDeleteCategory(category)">{{ t('mall.deleteCategory') }}</button>
           </view>
         </view>
         <view v-if="!categories.length" class="empty-category">
@@ -64,7 +64,7 @@
         <text class="label">{{ t('mall.categoryName') }}</text>
         <picker :value="rewardForm.categoryIndex" :range="categories" @change="onCategoryChange">
           <view class="picker">
-            {{ rewardForm.categoryIndex >= 0 ? categories[rewardForm.categoryIndex].name : t('mall.pleaseSelectCategory') }}
+            {{ rewardForm.categoryIndex >= 0 ? categories[rewardForm.categoryIndex] : t('mall.pleaseSelectCategory') }}
           </view>
         </picker>
       </view>
@@ -115,7 +115,7 @@
           </view>
           <view class="reward-actions">
             <button class="edit-reward-btn" @click="handleEditReward(reward)">{{ t('mall.editReward') }}</button>
-            <button class="delete-reward-btn" @click="handleDeleteReward(reward.category, reward.id)">{{ t('mall.deleteReward') }}</button>
+            <button class="delete-reward-btn" @click="handleDeleteReward(reward.id)">{{ t('mall.deleteReward') }}</button>
           </view>
         </view>
         <view v-if="!currentCategoryRewards.length" class="empty-rewards">
@@ -199,11 +199,7 @@ function handleAddCategory() {
     if (isEditing.value) {
       const oldRewards = getRewardsByCategory(editingCategory.value);
       removeCategory(editingCategory.value);
-      addCategory({
-        id: Date.now(),
-        name: categoryForm.name.trim(),
-        icon: categoryForm.icon
-      });
+      addCategory(categoryForm.name.trim());
       oldRewards.forEach(reward => {
         addReward({
           category: categoryForm.name.trim(),
@@ -216,11 +212,7 @@ function handleAddCategory() {
       isEditing.value = false;
       editingCategory.value = '';
     } else {
-      addCategory({
-        id: Date.now(),
-        name: categoryForm.name.trim(),
-        icon: categoryForm.icon
-      });
+      addCategory(categoryForm.name.trim());
     }
     categoryForm.name = '';
     categoryForm.icon = '';
@@ -237,7 +229,7 @@ function handleEditCategory(categoryName) {
 function handleDeleteCategory(categoryId) {
   uni.showModal({
     title: t('common.confirm'),
-    content: t('mall.confirmDeleteCategory', { name: categoryForm.name }),
+    content: t('mall.confirmDeleteCategory', { name: categoryId }),
     success: (res) => {
       if (res.confirm) {
         removeCategory(categoryId);
@@ -261,7 +253,7 @@ function handleAddReward() {
   if (rewardForm.categoryIndex >= 0 && rewardForm.name.trim() && rewardForm.icon && rewardForm.price) {
     const category = categories.value[rewardForm.categoryIndex];
     const rewardObj = {
-      category: category.name,
+      category: category,
       icon: rewardForm.icon,
       name: rewardForm.name.trim(),
       description: rewardForm.description.trim(),
@@ -290,13 +282,13 @@ function handleEditReward(reward) {
   showAddReward.value = true;
   showRewardsList.value = false;
 }
-function handleDeleteReward(categoryId, rewardId) {
+function handleDeleteReward(rewardId) {
   uni.showModal({
     title: t('common.confirm'),
     content: t('mall.confirmDeleteReward'),
     success: (res) => {
       if (res.confirm) {
-        removeReward(categoryId, rewardId);
+        removeReward(rewardId);
         uni.showToast({ title: t('mall.rewardDeleted'), icon: 'success' });
       }
     }
