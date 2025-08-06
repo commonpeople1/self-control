@@ -35,7 +35,9 @@ const messages = {
       error: '错误',
       success: '成功',
       warning: '警告',
-      info: '信息'
+      info: '信息',
+      operationFailed: '操作失败',
+      operationSuccess: '操作成功'
     },
 
     // 导航
@@ -45,6 +47,13 @@ const messages = {
       statistics: '统计中心',
       scoreMall: '积分商城',
       backpack: '背包',
+      profile: '个人中心'
+    },
+
+    // tabBar相关
+    tabBar: {
+      taskList: '任务列表',
+      scoreMall: '积分商城',
       profile: '个人中心'
     },
 
@@ -148,12 +157,82 @@ const messages = {
       itemStatus: '状态',
       available: '可兑换',
       soldOut: '已售罄',
-      comingSoon: '即将上架'
+      comingSoon: '即将上架',
+      categoryTitle: '奖励分类',
+      selectCategory: '请选择分类',
+      noCategory: '暂无分类，请到个人中心添加',
+      noRewards: '该分类下暂无奖励',
+      pleaseSelectCategory: '请先选择分类',
+      rewardList: '奖励列表',
+      rewardCount: '个奖励',
+      addCategory: '添加分类',
+      addReward: '添加奖励',
+      editCategory: '编辑分类',
+      editReward: '编辑奖励',
+      deleteCategory: '删除分类',
+      deleteReward: '删除奖励',
+      categoryName: '分类名称',
+      rewardName: '奖励名称',
+      rewardDescription: '奖励描述',
+      rewardPrice: '积分价格',
+      chooseIcon: '选择图标',
+      pleaseSelectCategory: '请选择分类',
+      pleaseEnterCategoryName: '请输入分类名称',
+      pleaseEnterRewardName: '请输入奖励名称',
+      pleaseEnterRewardDescription: '请输入奖励描述',
+      pleaseEnterRewardPrice: '请输入积分价格',
+      categoryAdded: '分类添加成功',
+      categoryEdited: '分类编辑成功',
+      categoryDeleted: '分类删除成功',
+      rewardAdded: '奖励添加成功',
+      rewardEdited: '奖励编辑成功',
+      rewardDeleted: '奖励删除成功',
+      confirmDeleteCategory: '确定要删除分类"{name}"吗？该分类下的所有奖励也会被删除。',
+      confirmDeleteReward: '确定要删除这个奖励吗？',
+      noCategoryYet: '暂无奖励分类',
+      clickToAddCategory: '点击上方"添加分类"按钮开始创建',
+      emptyRewards: '该分类下暂无奖励'
+    },
+
+    // 商城管理
+    mallManage: {
+      title: '商城管理',
+      addCategory: '添加分类',
+      addReward: '添加奖励',
+      editCategory: '编辑分类',
+      editReward: '编辑奖励',
+      deleteCategory: '删除分类',
+      deleteReward: '删除奖励',
+      categoryName: '分类名称',
+      rewardName: '奖励名称',
+      rewardDescription: '奖励描述',
+      rewardPrice: '积分价格',
+      chooseIcon: '选择图标',
+      pleaseSelectCategory: '请选择分类',
+      pleaseEnterCategoryName: '请输入分类名称',
+      pleaseEnterRewardName: '请输入奖励名称',
+      pleaseEnterRewardDescription: '请输入奖励描述',
+      pleaseEnterRewardPrice: '请输入积分价格',
+      categoryAdded: '分类添加成功',
+      categoryEdited: '分类编辑成功',
+      categoryDeleted: '分类删除成功',
+      rewardAdded: '奖励添加成功',
+      rewardEdited: '奖励编辑成功',
+      rewardDeleted: '奖励删除成功',
+      confirmDelete: '确认删除',
+      confirmDeleteCategory: '确定要删除分类"{name}"吗？该分类下的所有奖励也会被删除。',
+      confirmDeleteReward: '确定要删除这个奖励吗？',
+      confirmDeleteItem: '确定要删除这个物品吗？',
+      itemDeleted: '物品已删除',
+      selectCategoryFirst: '请先选择分类',
+      noCategoryYet: '暂无奖励分类',
+      clickToAddCategory: '点击上方"添加分类"按钮开始创建',
+      emptyRewards: '该分类下暂无奖励'
     },
 
     // 背包相关
     backpack: {
-      title: '背包',
+      title: '奖励背包',
       itemName: '物品名称',
       itemCount: '物品数量',
       itemDescription: '物品描述',
@@ -168,8 +247,12 @@ const messages = {
       itemUsed: '物品已使用',
       itemExpired: '物品已过期',
       itemInvalid: '物品无效',
-      emptyBackpack: '背包为空',
-      backpackFull: '背包已满'
+      emptyBackpack: '暂无奖励，快去积分商城兑换吧！',
+      backpackFull: '背包已满',
+      useReward: '使用奖励',
+      confirmUseReward: '确定要使用该奖励吗？',
+      rewardUsed: '已使用',
+      count: '数量'
     },
 
     // 个人中心
@@ -273,7 +356,9 @@ const messages = {
       error: 'Error',
       success: 'Success',
       warning: 'Warning',
-      info: 'Info'
+      info: 'Info',
+      operationFailed: 'Operation Failed',
+      operationSuccess: 'Operation Success'
     },
 
     // Navigation
@@ -283,6 +368,13 @@ const messages = {
       statistics: 'Statistics',
       scoreMall: 'Score Mall',
       backpack: 'Backpack',
+      profile: 'Profile'
+    },
+
+    // tabBar related
+    tabBar: {
+      taskList: 'Task List',
+      scoreMall: 'Score Mall',
       profile: 'Profile'
     },
 
@@ -386,12 +478,82 @@ const messages = {
       itemStatus: 'Status',
       available: 'Available',
       soldOut: 'Sold Out',
-      comingSoon: 'Coming Soon'
+      comingSoon: 'Coming Soon',
+      categoryTitle: 'Reward Categories',
+      selectCategory: 'Please Select Category',
+      noCategory: 'No categories, please add in profile center',
+      noRewards: 'No rewards in this category',
+      pleaseSelectCategory: 'Please select a category first',
+      rewardList: 'Reward List',
+      rewardCount: 'rewards',
+      addCategory: 'Add Category',
+      addReward: 'Add Reward',
+      editCategory: 'Edit Category',
+      editReward: 'Edit Reward',
+      deleteCategory: 'Delete Category',
+      deleteReward: 'Delete Reward',
+      categoryName: 'Category Name',
+      rewardName: 'Reward Name',
+      rewardDescription: 'Reward Description',
+      rewardPrice: 'Score Price',
+      chooseIcon: 'Choose Icon',
+      pleaseSelectCategory: 'Please Select Category',
+      pleaseEnterCategoryName: 'Please enter category name',
+      pleaseEnterRewardName: 'Please enter reward name',
+      pleaseEnterRewardDescription: 'Please enter reward description',
+      pleaseEnterRewardPrice: 'Please enter score price',
+      categoryAdded: 'Category Added Successfully',
+      categoryEdited: 'Category Edited Successfully',
+      categoryDeleted: 'Category Deleted Successfully',
+      rewardAdded: 'Reward Added Successfully',
+      rewardEdited: 'Reward Edited Successfully',
+      rewardDeleted: 'Reward Deleted Successfully',
+      confirmDeleteCategory: 'Are you sure you want to delete category "{name}"? All rewards in this category will also be deleted.',
+      confirmDeleteReward: 'Are you sure you want to delete this reward?',
+      noCategoryYet: 'No reward categories yet',
+      clickToAddCategory: 'Click "Add Category" button above to start creating',
+      emptyRewards: 'No rewards in this category'
+    },
+
+    // Mall Management
+    mallManage: {
+      title: 'Mall Management',
+      addCategory: 'Add Category',
+      addReward: 'Add Reward',
+      editCategory: 'Edit Category',
+      editReward: 'Edit Reward',
+      deleteCategory: 'Delete Category',
+      deleteReward: 'Delete Reward',
+      categoryName: 'Category Name',
+      rewardName: 'Reward Name',
+      rewardDescription: 'Reward Description',
+      rewardPrice: 'Score Price',
+      chooseIcon: 'Choose Icon',
+      pleaseSelectCategory: 'Please Select Category',
+      pleaseEnterCategoryName: 'Please enter category name',
+      pleaseEnterRewardName: 'Please enter reward name',
+      pleaseEnterRewardDescription: 'Please enter reward description',
+      pleaseEnterRewardPrice: 'Please enter score price',
+      categoryAdded: 'Category Added Successfully',
+      categoryEdited: 'Category Edited Successfully',
+      categoryDeleted: 'Category Deleted Successfully',
+      rewardAdded: 'Reward Added Successfully',
+      rewardEdited: 'Reward Edited Successfully',
+      rewardDeleted: 'Reward Deleted Successfully',
+      confirmDelete: 'Confirm Delete',
+      confirmDeleteCategory: 'Are you sure you want to delete category "{name}"? All rewards in this category will also be deleted.',
+      confirmDeleteReward: 'Are you sure you want to delete this reward?',
+      confirmDeleteItem: 'Are you sure you want to delete this item?',
+      itemDeleted: 'Item Deleted',
+      selectCategoryFirst: 'Please select a category first',
+      noCategoryYet: 'No reward categories yet',
+      clickToAddCategory: 'Click "Add Category" button above to start creating',
+      emptyRewards: 'No rewards in this category'
     },
 
     // Backpack related
     backpack: {
-      title: 'Backpack',
+      title: 'Reward Backpack',
       itemName: 'Item Name',
       itemCount: 'Item Count',
       itemDescription: 'Item Description',
@@ -406,8 +568,12 @@ const messages = {
       itemUsed: 'Item Used',
       itemExpired: 'Item Expired',
       itemInvalid: 'Item Invalid',
-      emptyBackpack: 'Backpack Empty',
-      backpackFull: 'Backpack Full'
+      emptyBackpack: 'No rewards yet, go to Score Mall to exchange!',
+      backpackFull: 'Backpack Full',
+      useReward: 'Use Reward',
+      confirmUseReward: 'Are you sure you want to use this reward?',
+      rewardUsed: 'Used',
+      count: 'Count'
     },
 
     // Profile

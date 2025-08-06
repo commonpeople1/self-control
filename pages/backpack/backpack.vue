@@ -1,38 +1,88 @@
 <template>
   <view class="backpack-page">
     <view class="header">
-      <text class="title">奖励背包</text>
+      <text class="title">{{ t('backpack.title') }}</text>
     </view>
     <view class="content">
-      <view v-if="!backpack.length" class="empty">暂无奖励，快去积分商城兑换吧！</view>
+      <!-- 测试按钮 -->
+      <view class="test-section">
+        <button class="test-btn" @click="addTestItem">添加测试物品</button>
+        <text class="test-tip">点击添加测试物品到背包</text>
+      </view>
+      
+      <view v-if="!backpack.length" class="empty">{{ t('backpack.emptyBackpack') }}</view>
       <view v-for="item in backpack" :key="item.id" class="reward-item">
         <image :src="item.icon" class="icon" />
         <view class="info">
           <text class="name">{{ item.name }}</text>
           <text class="desc">{{ item.description }}</text>
-          <text class="count">数量：{{ item.count }}</text>
+          <text class="count">{{ t('backpack.count') }}：{{ item.count }}</text>
         </view>
-        <button class="use-btn" @click="handleUse(item.id)">使用</button>
+        <button class="use-btn" @click="handleUse(item.id)">{{ t('backpack.useReward') }}</button>
       </view>
     </view>
   </view>
 </template>
 
 <script setup lang="js">
-import { useBackpack } from '@/composables/useBackpack.js'
-const { backpack, useReward } = useBackpack()
+import { onMounted } from 'vue';
+import { useBackpack } from '@/composables/useBackpack.js';
+import { useI18n } from '@/composables/useI18n.js';
+
+const { t } = useI18n();
+
+// 获取背包数据
+const { backpack, addToBackpack, useReward } = useBackpack();
+
+onMounted(() => {
+  // 设置页面标题
+  uni.setNavigationBarTitle({
+    title: t('backpack.title')
+  });
+  
+  // 监听语言变化事件
+  uni.$on('localeChanged', (locale) => {
+    console.log('背包页面收到语言变化事件:', locale);
+    // 更新页面标题
+    setTimeout(() => {
+      uni.setNavigationBarTitle({
+        title: t('backpack.title')
+      });
+    }, 150);
+  });
+});
 
 function handleUse(id) {
   uni.showModal({
-    title: '使用奖励',
-    content: '确定要使用该奖励吗？',
+    title: t('backpack.useReward'),
+    content: t('backpack.confirmUseReward'),
     success: (res) => {
       if (res.confirm) {
-        useReward(id)
-        uni.showToast({ title: '已使用', icon: 'success' })
+        useReward(id);
+        uni.showToast({ 
+          title: t('backpack.rewardUsed'), 
+          icon: 'success' 
+        });
       }
     }
-  })
+  });
+}
+
+// 添加测试物品
+function addTestItem() {
+  const testItem = {
+    id: Date.now(),
+    name: '测试奖励',
+    description: '这是一个测试奖励物品',
+    icon: '/static/icons/icon4.png',
+    count: 1
+  };
+  
+  addToBackpack(testItem);
+  uni.showToast({
+    title: '测试物品已添加到背包',
+    icon: 'success'
+  });
 }
 </script>
 
@@ -52,6 +102,27 @@ function handleUse(id) {
   }
   .content {
     padding: 24rpx;
+    .test-section {
+      margin-bottom: 20rpx;
+      text-align: center;
+      .test-btn {
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        color: #fff;
+        border: none;
+        border-radius: 20rpx;
+        padding: 12rpx 24rpx;
+        font-size: 24rpx;
+        margin-bottom: 10rpx;
+        transition: all 0.2s ease;
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+      .test-tip {
+        font-size: 24rpx;
+        color: #888;
+      }
+    }
     .empty {
       text-align: center;
       color: #bbb;
@@ -107,4 +178,4 @@ function handleUse(id) {
     }
   }
 }
-</style> 
+</style>

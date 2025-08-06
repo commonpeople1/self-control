@@ -48,18 +48,64 @@
         </view>
         <view class="menu-arrow">></view>
       </view>
+      
+      <!-- 测试tabBar更新按钮 -->
+      <view class="menu-item" @click="testTabBarUpdate">
+        <view class="menu-icon">🧪</view>
+        <view class="menu-info">
+          <text class="menu-title">测试TabBar更新</text>
+          <text class="menu-desc">点击测试tabBar文本更新</text>
+        </view>
+        <view class="menu-arrow">></view>
+      </view>
     </view>
   </view>
 </template>
 
 <script setup lang="js">
+import { onMounted, onUnmounted } from 'vue';
 import { useScore } from '@/composables/useScore.js';
 import { useI18n } from '@/composables/useI18n.js';
+import { forceUpdateTabBar } from '@/utils/tabBarI18n.js';
 
 const { t } = useI18n();
 
 // 获取积分信息
 const { score } = useScore();
+
+// 监听语言变化事件
+let localeChangeHandler = null;
+
+onMounted(() => {
+  // 监听语言变化事件
+  localeChangeHandler = (locale) => {
+    console.log('个人中心页面收到语言变化事件:', locale);
+    // 延迟更新tabBar，确保语言切换完成
+    setTimeout(() => {
+      forceUpdateTabBar();
+    }, 100);
+    // 更新页面标题
+    setTimeout(() => {
+      uni.setNavigationBarTitle({
+        title: t('profile.title')
+      });
+    }, 150);
+  };
+  
+  uni.$on('localeChanged', localeChangeHandler);
+  
+  // 设置页面标题
+  uni.setNavigationBarTitle({
+    title: t('profile.title')
+  });
+});
+
+onUnmounted(() => {
+  // 清理事件监听
+  if (localeChangeHandler) {
+    uni.$off('localeChanged', localeChangeHandler);
+  }
+});
 
 function goToBackpack() {
   uni.navigateTo({
@@ -94,6 +140,17 @@ function goToStatistics() {
       });
     }
   });
+}
+
+// 测试tabBar更新
+function testTabBarUpdate() {
+  console.log('测试tabBar更新')
+  forceUpdateTabBar()
+  
+  uni.showToast({
+    title: '已尝试更新tabBar',
+    icon: 'success'
+  })
 }
 </script>
 

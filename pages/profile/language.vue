@@ -33,6 +33,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useI18n } from '@/composables/useI18n.js'
 import { getSupportedLocales, setLocale, currentLocale } from '@/utils/i18n.js'
+import { forceUpdateTabBar } from '@/utils/tabBarI18n.js'
 
 const { t } = useI18n()
 
@@ -40,20 +41,47 @@ const supportedLocales = ref([])
 
 onMounted(() => {
   supportedLocales.value = getSupportedLocales()
+  // 设置页面标题
+  uni.setNavigationBarTitle({
+    title: t('profile.language')
+  })
 })
 
 function selectLanguage(locale) {
   if (locale !== currentLocale.value) {
+    console.log('切换语言:', locale)
+    
+    // 设置语言
     setLocale(locale)
+    
+    // 更新页面标题
+    uni.setNavigationBarTitle({
+      title: t('profile.language')
+    })
     
     uni.showToast({
       title: locale === 'zh' ? '语言已切换为中文' : 'Language changed to English',
       icon: 'success'
     })
     
-    // 延迟返回上一页，让用户看到切换效果
+    // 延迟跳转到tabBar页面来触发更新
     setTimeout(() => {
-      uni.navigateBack()
+      // 跳转到个人中心页面（tabBar页面）
+      uni.switchTab({
+        url: '/pages/profile/profile',
+        success: () => {
+          console.log('跳转到tabBar页面成功，准备更新tabBar')
+          // 在tabBar页面中更新tabBar
+          setTimeout(() => {
+            forceUpdateTabBar()
+          }, 200)
+        },
+        fail: (err) => {
+          console.error('跳转到tabBar页面失败:', err)
+          // 如果跳转失败，尝试返回上一页
+          uni.navigateBack()
+        }
+      })
     }, 1000)
   }
 }

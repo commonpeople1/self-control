@@ -2,94 +2,101 @@
   <view class="mall-manage-page">
     <view class="header">
       <view class="header-top">
-        <text class="title">商城管理</text>
+        <text class="title">{{ t('mall.title') }}</text>
         <view class="score-display">
-          <text class="score-label">积分:</text>
+          <text class="score-label">{{ t('score.scoreLabel') }}</text>
           <text class="score-value">{{ score }}</text>
         </view>
       </view>
       <view class="actions">
-        <button class="add-category-btn" @click="showAddCategory = true">添加分类</button>
-        <button class="add-reward-btn" @click="showAddReward = true" :disabled="!categories.length">添加奖励</button>
+        <button class="add-category-btn" @click="showAddCategory = true">{{ t('mall.addCategory') }}</button>
+        <button class="add-reward-btn" @click="showAddReward = true" :disabled="!categories.length">{{ t('mall.addReward') }}</button>
       </view>
     </view>
     <view class="content">
       <view class="category-list">
         <view 
           v-for="category in categories" 
-          :key="category"
+          :key="category.id"
           class="category-item"
         >
           <view class="category-info">
-            <text class="category-name">{{ category }}</text>
-            <text class="reward-count">{{ getRewardsByCategory(category).length }} 个奖励</text>
+            <text class="category-name">{{ category.name }}</text>
+            <text class="reward-count">{{ getRewardsByCategory(category.name).length }} {{ t('mall.rewardCount') }}</text>
           </view>
           <view class="category-actions">
-            <button class="view-rewards-btn" @click="viewCategoryRewards(category)">查看奖励</button>
-            <button class="edit-btn" @click="handleEditCategory(category)">编辑</button>
-            <button class="delete-btn" @click="handleDeleteCategory(category)">删除</button>
+            <button class="view-rewards-btn" @click="viewCategoryRewards(category.name)">{{ t('mall.rewardList') }}</button>
+            <button class="edit-btn" @click="handleEditCategory(category.name)">{{ t('mall.editCategory') }}</button>
+            <button class="delete-btn" @click="handleDeleteCategory(category.id)">{{ t('mall.deleteCategory') }}</button>
           </view>
         </view>
         <view v-if="!categories.length" class="empty-category">
-          <text class="empty-text">暂无奖励分类</text>
-          <text class="empty-desc">点击上方"添加分类"按钮开始创建</text>
+          <text class="empty-text">{{ t('mall.noCategoryYet') }}</text>
+          <text class="empty-desc">{{ t('mall.clickToAddCategory') }}</text>
         </view>
       </view>
     </view>
     <!-- 添加分类弹窗 -->
     <view v-if="showAddCategory" class="mask" @click="showAddCategory = false"></view>
     <view v-if="showAddCategory" class="add-dialog">
-      <text class="dialog-title">{{ isEditing ? '编辑分类' : '添加分类' }}</text>
+      <text class="dialog-title">{{ isEditing ? t('mall.editCategory') : t('mall.addCategory') }}</text>
       <view class="form-row">
-        <text class="label">分类名称</text>
-        <input v-model="categoryForm.name" placeholder="请输入分类名称" />
+        <text class="label">{{ t('mall.categoryName') }}</text>
+        <input v-model="categoryForm.name" :placeholder="t('mall.pleaseEnterCategoryName')" />
+      </view>
+      <view class="form-row">
+        <text class="label">{{ t('mall.chooseIcon') }}</text>
+        <button class="choose-icon-btn" @click="showIconPicker = true">
+          <image v-if="categoryForm.icon" :src="categoryForm.icon" class="icon-preview" />
+          <span v-else>{{ t('mall.chooseIcon') }}</span>
+        </button>
       </view>
       <view class="dialog-actions">
-        <button class="cancel" @click="cancelEdit">取消</button>
-        <button class="confirm" :disabled="!categoryForm.name" @click="handleAddCategory">确定</button>
+        <button class="cancel" @click="cancelEdit">{{ t('common.cancel') }}</button>
+        <button class="confirm" :disabled="!categoryForm.name" @click="handleAddCategory">{{ t('common.confirm') }}</button>
       </view>
     </view>
     <!-- 添加奖励弹窗 -->
     <view v-if="showAddReward" class="mask" @click="showAddReward = false"></view>
     <view v-if="showAddReward" class="add-dialog">
-      <text class="dialog-title">{{ isEditingReward ? '编辑奖励' : '添加奖励' }}</text>
+      <text class="dialog-title">{{ isEditingReward ? t('mall.editReward') : t('mall.addReward') }}</text>
       <view class="form-row">
-        <text class="label">分类</text>
+        <text class="label">{{ t('mall.categoryName') }}</text>
         <picker :value="rewardForm.categoryIndex" :range="categories" @change="onCategoryChange">
           <view class="picker">
-            {{ rewardForm.categoryIndex >= 0 ? categories[rewardForm.categoryIndex] : '请选择分类' }}
+            {{ rewardForm.categoryIndex >= 0 ? categories[rewardForm.categoryIndex].name : t('mall.pleaseSelectCategory') }}
           </view>
         </picker>
       </view>
       <view class="form-row">
-        <text class="label">图标</text>
+        <text class="label">{{ t('mall.chooseIcon') }}</text>
         <button class="choose-icon-btn" @click="showIconPicker = true">
           <image v-if="rewardForm.icon" :src="rewardForm.icon" class="icon-preview" />
-          <span v-else>选择图标</span>
+          <span v-else>{{ t('mall.chooseIcon') }}</span>
         </button>
       </view>
       <view class="form-row">
-        <text class="label">名称</text>
-        <input v-model="rewardForm.name" placeholder="请输入奖励名称" />
+        <text class="label">{{ t('mall.rewardName') }}</text>
+        <input v-model="rewardForm.name" :placeholder="t('mall.pleaseEnterRewardName')" />
       </view>
       <view class="form-row">
-        <text class="label">描述</text>
-        <textarea v-model="rewardForm.description" placeholder="请输入奖励描述" />
+        <text class="label">{{ t('mall.rewardDescription') }}</text>
+        <textarea v-model="rewardForm.description" :placeholder="t('mall.pleaseEnterRewardDescription')" />
       </view>
       <view class="form-row">
-        <text class="label">积分价格</text>
-        <input v-model="rewardForm.price" type="number" placeholder="请输入积分价格" />
+        <text class="label">{{ t('mall.rewardPrice') }}</text>
+        <input v-model="rewardForm.price" type="number" :placeholder="t('mall.pleaseEnterRewardPrice')" />
       </view>
       <view class="dialog-actions">
-        <button class="cancel" @click="cancelRewardEdit">取消</button>
-        <button class="confirm" :disabled="!rewardForm.name || !rewardForm.icon || rewardForm.categoryIndex < 0 || !rewardForm.price" @click="handleAddReward">确定</button>
+        <button class="cancel" @click="cancelRewardEdit">{{ t('common.cancel') }}</button>
+        <button class="confirm" :disabled="!rewardForm.name || !rewardForm.icon || rewardForm.categoryIndex < 0 || !rewardForm.price" @click="handleAddReward">{{ t('common.confirm') }}</button>
       </view>
     </view>
     <!-- 查看分类奖励弹窗 -->
     <view v-if="showRewardsList" class="mask" @click="showRewardsList = false"></view>
     <view v-if="showRewardsList" class="rewards-dialog">
       <view class="dialog-header">
-        <text class="dialog-title">{{ selectedCategory }} - 奖励列表</text>
+        <text class="dialog-title">{{ selectedCategory }} - {{ t('mall.rewardList') }}</text>
         <button class="close-btn" @click="showRewardsList = false">×</button>
       </view>
       <scroll-view class="rewards-list" scroll-y>
@@ -103,16 +110,16 @@
             <view class="reward-details">
               <text class="reward-name">{{ reward.name }}</text>
               <text class="reward-desc">{{ reward.description }}</text>
-              <text class="reward-price">{{ reward.price }} 积分</text>
+              <text class="reward-price">{{ reward.price }} {{ t('score.score') }}</text>
             </view>
           </view>
           <view class="reward-actions">
-            <button class="edit-reward-btn" @click="handleEditReward(reward)">编辑</button>
-            <button class="delete-reward-btn" @click="handleDeleteReward(reward.id)">删除</button>
+            <button class="edit-reward-btn" @click="handleEditReward(reward)">{{ t('mall.editReward') }}</button>
+            <button class="delete-reward-btn" @click="handleDeleteReward(reward.category, reward.id)">{{ t('mall.deleteReward') }}</button>
           </view>
         </view>
         <view v-if="!currentCategoryRewards.length" class="empty-rewards">
-          <text>该分类下暂无奖励</text>
+          <text>{{ t('mall.emptyRewards') }}</text>
         </view>
       </scroll-view>
     </view>
@@ -121,16 +128,31 @@
 </template>
 
 <script setup lang="js">
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { useRewards } from '@/composables/useRewards.js';
 import { useScore } from '@/composables/useScore.js';
 import IconPickerDialog from '@/components/IconPickerDialog.vue';
+import { useI18n } from '@/composables/useI18n.js';
+
+const { t } = useI18n();
 
 const iconCategoryList = [
-  { category: '学习', icons: ['/static/icons/learn1.svg', '/static/icons/learn2.svg'] },
-  { category: '运动', icons: ['/static/icons/sport1.svg', '/static/svgs/lu1.svg'] },
-  { category: '休息', icons: ['/static/icons/sleep1.svg', '/static/icons/sleep2.svg'] },
-  { category: '其他', icons: ['/static/icons/icon4.png', '/static/icons/icon5.png'] }
+  {
+    category: '学习',
+    icons: ['/static/icons/learn1.svg', '/static/icons/learn2.svg']
+  },
+  {
+    category: '运动',
+    icons: ['/static/icons/sport1.svg', '/static/icons/sport2.svg']
+  },
+  {
+    category: '休息',
+    icons: ['/static/icons/sleep1.svg', '/static/icons/sleep2.svg']
+  },
+  {
+    category: '其他',
+    icons: ['/static/icons/icon4.png', '/static/icons/icon5.png']
+  }
 ];
 
 const { score } = useScore();
@@ -146,7 +168,7 @@ const editingCategory = ref('');
 const editingRewardId = ref('');
 const selectedCategory = ref('');
 
-const categoryForm = reactive({ name: '' });
+const categoryForm = reactive({ name: '', icon: '' });
 const rewardForm = reactive({ categoryIndex: -1, icon: '', name: '', description: '', price: '' });
 
 const currentCategoryRewards = computed(() => {
@@ -154,12 +176,34 @@ const currentCategoryRewards = computed(() => {
   return getRewardsByCategory(selectedCategory.value);
 });
 
+onMounted(() => {
+  // 设置页面标题
+  uni.setNavigationBarTitle({
+    title: t('mallManage.title')
+  });
+  
+  // 监听语言变化事件
+  uni.$on('localeChanged', (locale) => {
+    console.log('商城管理页面收到语言变化事件:', locale);
+    // 更新页面标题
+    setTimeout(() => {
+      uni.setNavigationBarTitle({
+        title: t('mallManage.title')
+      });
+    }, 150);
+  });
+});
+
 function handleAddCategory() {
   if (categoryForm.name.trim()) {
     if (isEditing.value) {
       const oldRewards = getRewardsByCategory(editingCategory.value);
       removeCategory(editingCategory.value);
-      addCategory(categoryForm.name.trim());
+      addCategory({
+        id: Date.now(),
+        name: categoryForm.name.trim(),
+        icon: categoryForm.icon
+      });
       oldRewards.forEach(reward => {
         addReward({
           category: categoryForm.name.trim(),
@@ -172,11 +216,16 @@ function handleAddCategory() {
       isEditing.value = false;
       editingCategory.value = '';
     } else {
-      addCategory(categoryForm.name.trim());
+      addCategory({
+        id: Date.now(),
+        name: categoryForm.name.trim(),
+        icon: categoryForm.icon
+      });
     }
     categoryForm.name = '';
+    categoryForm.icon = '';
     showAddCategory.value = false;
-    uni.showToast({ title: isEditing.value ? '分类编辑成功' : '分类添加成功', icon: 'success' });
+    uni.showToast({ title: isEditing.value ? t('mall.categoryEdited') : t('mall.categoryAdded'), icon: 'success' });
   }
 }
 function handleEditCategory(categoryName) {
@@ -185,14 +234,14 @@ function handleEditCategory(categoryName) {
   categoryForm.name = categoryName;
   showAddCategory.value = true;
 }
-function handleDeleteCategory(categoryName) {
+function handleDeleteCategory(categoryId) {
   uni.showModal({
-    title: '确认删除',
-    content: `确定要删除分类"${categoryName}"吗？该分类下的所有奖励也会被删除。`,
+    title: t('common.confirm'),
+    content: t('mall.confirmDeleteCategory', { name: categoryForm.name }),
     success: (res) => {
       if (res.confirm) {
-        removeCategory(categoryName);
-        uni.showToast({ title: '分类删除成功', icon: 'success' });
+        removeCategory(categoryId);
+        uni.showToast({ title: t('mall.categoryDeleted'), icon: 'success' });
       }
     }
   });
@@ -201,6 +250,7 @@ function cancelEdit() {
   isEditing.value = false;
   editingCategory.value = '';
   categoryForm.name = '';
+  categoryForm.icon = '';
   showAddCategory.value = false;
 }
 function viewCategoryRewards(categoryName) {
@@ -211,7 +261,7 @@ function handleAddReward() {
   if (rewardForm.categoryIndex >= 0 && rewardForm.name.trim() && rewardForm.icon && rewardForm.price) {
     const category = categories.value[rewardForm.categoryIndex];
     const rewardObj = {
-      category,
+      category: category.name,
       icon: rewardForm.icon,
       name: rewardForm.name.trim(),
       description: rewardForm.description.trim(),
@@ -226,7 +276,7 @@ function handleAddReward() {
     isEditingReward.value = false;
     editingRewardId.value = '';
     showAddReward.value = false;
-    uni.showToast({ title: wasEditing ? '奖励编辑成功' : '奖励添加成功', icon: 'success' });
+    uni.showToast({ title: wasEditing ? t('mall.rewardEdited') : t('mall.rewardAdded'), icon: 'success' });
   }
 }
 function handleEditReward(reward) {
@@ -240,14 +290,14 @@ function handleEditReward(reward) {
   showAddReward.value = true;
   showRewardsList.value = false;
 }
-function handleDeleteReward(rewardId) {
+function handleDeleteReward(categoryId, rewardId) {
   uni.showModal({
-    title: '确认删除',
-    content: '确定要删除这个奖励吗？',
+    title: t('common.confirm'),
+    content: t('mall.confirmDeleteReward'),
     success: (res) => {
       if (res.confirm) {
-        removeReward(rewardId);
-        uni.showToast({ title: '奖励删除成功', icon: 'success' });
+        removeReward(categoryId, rewardId);
+        uni.showToast({ title: t('mall.rewardDeleted'), icon: 'success' });
       }
     }
   });
@@ -262,7 +312,11 @@ function onCategoryChange(e) {
   rewardForm.categoryIndex = e.detail.value;
 }
 function onSelectIcon(icon) {
-  rewardForm.icon = icon;
+  if (showAddCategory.value) {
+    categoryForm.icon = icon;
+  } else if (showAddReward.value) {
+    rewardForm.icon = icon;
+  }
 }
 </script>
 

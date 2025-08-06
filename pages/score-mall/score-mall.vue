@@ -1,9 +1,9 @@
 <template>
   <view class="score-mall-page">
     <view class="header">
-      <text class="title">积分商城</text>
+      <text class="title">{{ t('mall.title') }}</text>
       <view class="score-display">
-        <text class="score-label">积分:</text>
+        <text class="score-label">{{ t('score.scoreLabel') }}</text>
         <text class="score-value">{{ score }}</text>
       </view>
     </view>
@@ -12,7 +12,7 @@
       <!-- 左侧分类导航 -->
       <view class="category-nav">
         <view class="nav-header">
-          <text class="nav-title">奖励分类</text>
+          <text class="nav-title">{{ t('mall.categoryTitle') }}</text>
         </view>
         <scroll-view class="category-list" scroll-y>
           <view 
@@ -25,7 +25,7 @@
             <text>{{ category }}</text>
           </view>
           <view v-if="!categories.length" class="empty-category">
-            暂无分类，请到个人中心添加
+            {{ t('mall.noCategory') }}
           </view>
         </scroll-view>
       </view>
@@ -33,7 +33,7 @@
       <!-- 右侧奖励列表 -->
       <view class="reward-content">
         <view class="reward-header">
-          <text class="reward-title">{{ selectedCategory || '请选择分类' }}</text>
+          <text class="reward-title">{{ selectedCategory || t('mall.selectCategory') }}</text>
         </view>
         <scroll-view class="reward-list" scroll-y>
           <RewardItem
@@ -47,7 +47,7 @@
             :price="reward.price"
           />
           <view v-if="!currentRewards.length" class="empty-rewards">
-            {{ selectedCategory ? '该分类下暂无奖励' : '请先选择分类' }}
+            {{ selectedCategory ? t('mall.noRewards') : t('mall.pleaseSelectCategory') }}
           </view>
         </scroll-view>
       </view>
@@ -56,10 +56,14 @@
 </template>
 
 <script setup lang="js">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRewards } from '@/composables/useRewards.js';
 import { useScore } from '@/composables/useScore.js';
 import RewardItem from '@/components/RewardItem.vue';
+import { useI18n } from '@/composables/useI18n.js';
+import { forceUpdateTabBar } from '@/utils/tabBarI18n.js';
+
+const { t } = useI18n();
 
 const iconCategoryList = [
   {
@@ -92,16 +96,50 @@ const currentRewards = computed(() => {
   return getRewardsByCategory(selectedCategory.value);
 });
 
+// 监听语言变化事件
+let localeChangeHandler = null;
+
+onMounted(() => {
+  // 监听语言变化事件
+  localeChangeHandler = (locale) => {
+    console.log('积分商城页面收到语言变化事件:', locale);
+    // 延迟更新tabBar，确保语言切换完成
+    setTimeout(() => {
+      forceUpdateTabBar();
+    }, 100);
+    // 更新页面标题
+    setTimeout(() => {
+      uni.setNavigationBarTitle({
+        title: t('mall.title')
+      });
+    }, 150);
+  };
+  
+  uni.$on('localeChanged', localeChangeHandler);
+  
+  // 设置页面标题
+  uni.setNavigationBarTitle({
+    title: t('mall.title')
+  });
+});
+
+onUnmounted(() => {
+  // 清理事件监听
+  if (localeChangeHandler) {
+    uni.$off('localeChanged', localeChangeHandler);
+  }
+});
+
 // 处理兑换事件
 function handleExchange(rewardData) {
   uni.showModal({
-    title: '确认兑换',
-    content: `确定要兑换"${rewardData.name}"吗？将消耗 ${rewardData.price} 积分。`,
+    title: t('mall.exchangeConfirm'),
+    content: t('mall.confirmDeleteReward', { name: rewardData.name, price: rewardData.price }),
     success: (res) => {
       if (res.confirm) {
         // 这里可以添加兑换逻辑，比如扣除积分、记录兑换历史等
         uni.showToast({
-          title: '兑换成功！',
+          title: t('mall.exchangeSuccess'),
           icon: 'success'
         });
       }

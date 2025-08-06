@@ -4,7 +4,7 @@
     <view class="info">
       <view class="name">{{ name }}</view>
       <view class="description">{{ description }}</view>
-      <view class="price">{{ price }} 积分</view>
+      <view class="price">{{ price }} {{ t('score.score') }}</view>
     </view>
     <button
       class="exchange-btn"
@@ -12,7 +12,7 @@
       @click="handleExchange"
       :disabled="!canExchange"
     >
-      {{ canExchange ? '兑换' : '积分不足' }}
+      {{ canExchange ? t('mall.exchange') : t('mall.insufficientScore') }}
     </button>
   </view>
 </template>
@@ -21,6 +21,9 @@
 import { defineProps, defineEmits, computed } from 'vue';
 import { useScore } from '@/composables/useScore.js';
 import { useBackpack } from '@/composables/useBackpack.js';
+import { useI18n } from '@/composables/useI18n.js';
+
+const { t } = useI18n();
 
 const props = defineProps({
   id: [String, Number],
@@ -47,8 +50,8 @@ const canExchange = computed(() => {
 function handleExchange() {
   if (!canExchange.value) return;
   uni.showModal({
-    title: '确认兑换',
-    content: `确定要兑换"${props.name}"吗？将消耗 ${props.price} 积分。`,
+    title: t('mall.exchangeConfirm'),
+    content: t('mall.confirmDeleteReward', { name: props.name, price: props.price }),
     success: (res) => {
       if (res.confirm) {
         subtractScore(Number(props.price));
@@ -60,7 +63,7 @@ function handleExchange() {
           price: props.price,
           category: props.category
         });
-        uni.showToast({ title: '兑换成功', icon: 'success' });
+        uni.showToast({ title: t('mall.exchangeSuccess'), icon: 'success' });
         emit('exchange', { id: props.id, name: props.name, price: props.price });
       }
     }

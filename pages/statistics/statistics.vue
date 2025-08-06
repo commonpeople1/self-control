@@ -331,6 +331,22 @@ function onPageShow() {
 }
 
 onMounted(() => {
+  // 设置页面标题
+  uni.setNavigationBarTitle({
+    title: t('statistics.title')
+  });
+  
+  // 监听语言变化事件
+  uni.$on('localeChanged', (locale) => {
+    console.log('统计页面收到语言变化事件:', locale);
+    // 更新页面标题
+    setTimeout(() => {
+      uni.setNavigationBarTitle({
+        title: t('statistics.title')
+      });
+    }, 150);
+  });
+  
   loadStatistics();
 });
 

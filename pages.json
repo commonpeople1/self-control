@@ -4,49 +4,49 @@
 		{
 			"path": "pages/task-list/task-list",
 			"style": {
-				"navigationBarTitleText": "任务列表"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
 			"path": "pages/score-mall/score-mall",
 			"style": {
-				"navigationBarTitleText": "积分商城"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
 			"path": "pages/profile/profile",
 			"style": {
-				"navigationBarTitleText": "个人中心"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
 			"path": "pages/profile/language",
 			"style": {
-				"navigationBarTitleText": "语言设置"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
 			"path": "pages/mall-manage/mall-manage",
 			"style": {
-				"navigationBarTitleText": "商城管理"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
 			"path": "pages/backpack/backpack",
 			"style": {
-				"navigationBarTitleText": "奖励背包"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
 			"path": "pages/statistics/statistics",
 			"style": {
-				"navigationBarTitleText": "统计中心"
+				"navigationBarTitleText": ""
 			}
 		}
 		
