@@ -25,6 +25,7 @@
         :score="task.score"
         :checked="checkedIds.includes(task.id)"
         :completed="task.completed"
+        :type="task.type"
         @update:checked="val => toggleCheck(task.id, val)"
         @toggleComplete="handleToggleComplete(task.id)"
       />
@@ -34,6 +35,25 @@
     <view v-if="showAdd" class="mask" @click="showAdd = false"></view>
     <view v-if="showAdd" class="add-dialog">
       <text class="dialog-title">新建任务</text>
+      <view class="form-row">
+        <text class="label">任务类型</text>
+        <view class="task-type-selector">
+          <button 
+            class="type-btn" 
+            :class="{ active: form.type === 'permanent' }"
+            @click="form.type = 'permanent'"
+          >
+            长期任务
+          </button>
+          <button 
+            class="type-btn" 
+            :class="{ active: form.type === 'temporary' }"
+            @click="form.type = 'temporary'"
+          >
+            临时任务
+          </button>
+        </view>
+      </view>
       <view class="form-row">
         <text class="label">图标</text>
         <button class="choose-icon-btn" @click="showIconPicker = true">
@@ -52,6 +72,10 @@
       <view class="form-row">
         <text class="label">得分</text>
         <input v-model.number="form.score" type="number" placeholder="请输入得分" />
+      </view>
+      <view class="form-row" v-if="form.type === 'temporary'">
+        <text class="label">提示</text>
+        <text class="temporary-tip">临时任务完成后，第二天将自动从列表中移除</text>
       </view>
       <view class="dialog-actions">
         <button class="cancel" @click="showAdd = false">取消</button>
@@ -101,14 +125,17 @@ const form = reactive({
   icon: '',
   name: '',
   detail: '',
-  score: 1
+  score: 1,
+  type: 'permanent' // 默认为长期任务
 });
 
 function toggleCheck(id, checked) {
+  // 将id转换为数字类型进行比较，因为任务ID在数据中是数字类型
+  const taskId = typeof id === 'string' ? parseInt(id) : id;
   if (checked) {
-    if (!checkedIds.value.includes(id)) checkedIds.value.push(id);
+    if (!checkedIds.value.includes(taskId)) checkedIds.value.push(taskId);
   } else {
-    checkedIds.value = checkedIds.value.filter(i => i !== id);
+    checkedIds.value = checkedIds.value.filter(i => i !== taskId);
   }
 }
 
@@ -119,9 +146,10 @@ function handleAddTask() {
     name: form.name,
     detail: form.detail,
     score: form.score,
+    type: form.type
   });
   showAdd.value = false;
-  Object.assign(form, { icon: '', name: '', detail: '', score: 1 });
+  Object.assign(form, { icon: '', name: '', detail: '', score: 1, type: 'permanent' });
 }
 
 function handleDeleteTasks() {
@@ -271,6 +299,40 @@ function handleResetTasks() {
       padding: 12rpx 0;
       background: transparent;
       outline: none;
+    }
+    .task-type-selector {
+      flex: 1;
+      display: flex;
+      gap: 16rpx;
+      .type-btn {
+        flex: 1;
+        height: 64rpx;
+        border: 2rpx solid #e0e0e0;
+        border-radius: 16rpx;
+        background: #fff;
+        color: #666;
+        font-size: 28rpx;
+        transition: all 0.3s ease;
+        
+        &.active {
+          background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+          color: #fff;
+          border-color: transparent;
+        }
+        
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+    }
+    .temporary-tip {
+      flex: 1;
+      font-size: 24rpx;
+      color: #ff9800;
+      background: #fff3e0;
+      padding: 12rpx 16rpx;
+      border-radius: 12rpx;
+      border-left: 4rpx solid #ff9800;
     }
   }
   .dialog-actions {

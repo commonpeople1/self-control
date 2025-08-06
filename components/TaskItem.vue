@@ -1,7 +1,7 @@
 <template>
   <view class="task-item" :class="{ completed: completed }" @dblclick="$emit('toggleComplete')">
     <checkbox-group @change="onCheck">
-      <checkbox class="checkbox" :value="id" :checked="checked" />
+      <checkbox class="checkbox" :value="String(id)" :checked="checked" />
     </checkbox-group>
     <image class="icon" :src="icon" mode="aspectFill" />
     <view class="info">
@@ -9,7 +9,10 @@
       <view class="detail">{{ detail }}</view>
     </view>
     <view class="score">+{{ score }}</view>
-    <view v-if="completed" class="completed-badge">已完成</view>
+    <view class="badges">
+      <view v-if="type === 'temporary'" class="temporary-badge">临时</view>
+      <view v-if="completed" class="completed-badge">已完成</view>
+    </view>
   </view>
 </template>
 
@@ -22,7 +25,11 @@ const props = defineProps({
   detail: String,
   score: Number,
   checked: Boolean,
-  completed: Boolean
+  completed: Boolean,
+  type: {
+    type: String,
+    default: 'permanent'
+  }
 });
 const emit = defineEmits(['update:checked', 'toggleComplete']);
 function onCheck(e) {
@@ -100,16 +107,33 @@ function onCheck(e) {
     margin-left: 16rpx;
     transition: color 0.3s ease;
   }
-  .completed-badge {
+  .badges {
     position: absolute;
     top: 8rpx;
     right: 8rpx;
-    background: #4caf50;
-    color: #fff;
-    font-size: 20rpx;
-    padding: 4rpx 8rpx;
-    border-radius: 8rpx;
-    opacity: 0.8;
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+    
+    .temporary-badge {
+      background: #ff9800;
+      color: #fff;
+      font-size: 20rpx;
+      padding: 4rpx 8rpx;
+      border-radius: 8rpx;
+      opacity: 0.9;
+      white-space: nowrap;
+    }
+    
+    .completed-badge {
+      background: #4caf50;
+      color: #fff;
+      font-size: 20rpx;
+      padding: 4rpx 8rpx;
+      border-radius: 8rpx;
+      opacity: 0.8;
+      white-space: nowrap;
+    }
   }
 }
 </style> 

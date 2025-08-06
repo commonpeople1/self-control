@@ -211,17 +211,20 @@ export function useStatistics() {
       recentData.push(dayData)
     }
     
-    const totalScore = recentData.reduce((sum, day) => sum + day.score, 0)
-    const totalTasks = recentData.reduce((sum, day) => sum + day.taskCount, 0)
+    // 倒序排列，让第21天（今天）显示在最上面
+    const sortedData = recentData.reverse()
+    
+    const totalScore = sortedData.reduce((sum, day) => sum + day.score, 0)
+    const totalTasks = sortedData.reduce((sum, day) => sum + day.taskCount, 0)
     
     // 计算平均完成率（只考虑有任务的日期）
-    const daysWithTasks = recentData.filter(day => day.taskCount > 0)
+    const daysWithTasks = sortedData.filter(day => day.taskCount > 0)
     const averageCompletionRate = daysWithTasks.length > 0 
       ? Math.round(daysWithTasks.reduce((sum, day) => sum + day.dailyCompletionRate, 0) / daysWithTasks.length)
       : 0
     
     return {
-      recentData,
+      recentData: sortedData,
       totalScore,
       totalTasks,
       averageScore: Math.round(totalScore / 21 * 10) / 10,

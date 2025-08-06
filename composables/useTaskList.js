@@ -33,7 +33,26 @@ export function useTaskList(scoreManager) {
     if (lastReset !== today) {
       // 需要重置
       resetAllTasks()
+      // 清理已完成的临时任务
+      cleanupCompletedTemporaryTasks()
       uni.setStorageSync(LAST_RESET_KEY, today)
+    }
+  }
+
+  // 清理已完成的临时任务
+  function cleanupCompletedTemporaryTasks() {
+    const beforeCount = tasks.value.length
+    tasks.value = tasks.value.filter(task => {
+      // 如果是临时任务且已完成，则移除
+      if (task.type === 'temporary' && task.completed) {
+        console.log('移除已完成的临时任务:', task.name)
+        return false
+      }
+      return true
+    })
+    const afterCount = tasks.value.length
+    if (beforeCount !== afterCount) {
+      console.log(`清理了 ${beforeCount - afterCount} 个已完成的临时任务`)
     }
   }
 
@@ -49,7 +68,8 @@ export function useTaskList(scoreManager) {
     console.log('添加任务:', task)
     const newTask = {
       ...task,
-      completed: false // 默认未完成
+      completed: false, // 默认未完成
+      type: task.type || 'permanent' // 默认为长期任务
     }
     tasks.value.push(newTask)
     
@@ -97,7 +117,8 @@ export function useTaskList(scoreManager) {
     setTasks,
     toggleTaskComplete,
     resetAllTasks,
-    checkDailyReset
+    checkDailyReset,
+    cleanupCompletedTemporaryTasks
   }
 
   return instance

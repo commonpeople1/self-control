@@ -2,7 +2,6 @@
   <view class="statistics-page">
     <view class="header">
       <text class="title">统计中心</text>
-      <button class="test-btn" @click="generateTestData">生成测试数据</button>
     </view>
     
     <!-- 统计卡片 -->
@@ -10,29 +9,29 @@
       <view class="stat-card">
         <view class="stat-icon">📊</view>
         <view class="stat-content">
-          <text class="stat-value">{{ weeklySummary.totalScore }}</text>
-          <text class="stat-label">本周积分</text>
+          <text class="stat-value">{{ currentSummary.totalScore }}</text>
+          <text class="stat-label">{{ currentSummary.scoreLabel }}</text>
         </view>
       </view>
       <view class="stat-card">
         <view class="stat-icon">✅</view>
         <view class="stat-content">
-          <text class="stat-value">{{ weeklySummary.totalTasks }}</text>
-          <text class="stat-label">本周任务</text>
+          <text class="stat-value">{{ currentSummary.totalTasks }}</text>
+          <text class="stat-label">{{ currentSummary.taskLabel }}</text>
         </view>
       </view>
       <view class="stat-card">
         <view class="stat-icon">📈</view>
         <view class="stat-content">
-          <text class="stat-value">{{ monthlySummary.totalScore }}</text>
-          <text class="stat-label">本月积分</text>
+          <text class="stat-value">{{ currentSummary.averageScore }}</text>
+          <text class="stat-label">{{ currentSummary.averageLabel }}</text>
         </view>
       </view>
       <view class="stat-card">
         <view class="stat-icon">🎯</view>
         <view class="stat-content">
-          <text class="stat-value">{{ recent21Days.completionRate }}%</text>
-          <text class="stat-label">完成率</text>
+          <text class="stat-value">{{ currentSummary.completionRate }}%</text>
+          <text class="stat-label">{{ currentSummary.rateLabel }}</text>
         </view>
       </view>
     </view>
@@ -212,7 +211,7 @@
 </template>
 
 <script setup lang="js">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useStatistics } from '@/composables/useStatistics.js';
 
 const { getWeeklySummary, getMonthlySummary, getRecent21Days } = useStatistics();
@@ -255,40 +254,71 @@ const recent21Days = ref({
   completionRate: 0
 });
 
-
-
-// 生成测试数据
-function generateTestData() {
-  const { recordTaskCompletion } = useStatistics();
-  
-  // 生成过去21天的测试数据
-  for (let i = 20; i >= 0; i--) {
-    const date = new Date();
-    date.setDate(date.getDate() - i); // 从今天往前推i天
-    
-    // 随机生成一些任务完成记录
-    const taskCount = Math.floor(Math.random() * 5) + 1; // 1-5个任务
-    
-    // 记录任务完成（部分完成，部分未完成）
-    for (let j = 0; j < taskCount; j++) {
-      const isCompleted = Math.random() > 0.3; // 70%的概率完成
-      recordTaskCompletion(
-        `test_task_${i}_${j}`,
-        `测试任务${j + 1}`,
-        Math.floor(Math.random() * 3) + 1,
-        isCompleted
-      );
-    }
+// 计算当前显示的汇总数据
+const currentSummary = computed(() => {
+  switch (currentTab.value) {
+    case 'week':
+      // 计算本周每天完成率的平均值
+      const weekDailyRates = weeklySummary.value.weekData
+        .filter(day => day.taskCount > 0) // 只考虑有任务的日期
+        .map(day => (day.completedTaskCount / day.taskCount) * 100);
+      const weekCompletionRate = weekDailyRates.length > 0 
+        ? Math.round(weekDailyRates.reduce((sum, rate) => sum + rate, 0) / weekDailyRates.length)
+        : 0;
+      
+      return {
+        totalScore: weeklySummary.value.totalScore,
+        totalTasks: weeklySummary.value.totalTasks,
+        averageScore: weeklySummary.value.averageScore,
+        completionRate: weekCompletionRate,
+        scoreLabel: '本周积分',
+        taskLabel: '本周任务',
+        averageLabel: '平均积分',
+        rateLabel: '完成率'
+      };
+    case 'month':
+      // 计算本月每天完成率的平均值
+      const monthDailyRates = monthlySummary.value.monthData
+        .filter(day => day.taskCount > 0) // 只考虑有任务的日期
+        .map(day => (day.completedTaskCount / day.taskCount) * 100);
+      const monthCompletionRate = monthDailyRates.length > 0 
+        ? Math.round(monthDailyRates.reduce((sum, rate) => sum + rate, 0) / monthDailyRates.length)
+        : 0;
+      
+      return {
+        totalScore: monthlySummary.value.totalScore,
+        totalTasks: monthlySummary.value.totalTasks,
+        averageScore: monthlySummary.value.averageScore,
+        completionRate: monthCompletionRate,
+        scoreLabel: '本月积分',
+        taskLabel: '本月任务',
+        averageLabel: '平均积分',
+        rateLabel: '完成率'
+      };
+    case 'recent21':
+      return {
+        totalScore: recent21Days.value.totalScore,
+        totalTasks: recent21Days.value.totalTasks,
+        averageScore: recent21Days.value.averageScore,
+        completionRate: recent21Days.value.completionRate,
+        scoreLabel: '21天积分',
+        taskLabel: '21天任务',
+        averageLabel: '平均积分',
+        rateLabel: '完成率'
+      };
+    default:
+      return {
+        totalScore: 0,
+        totalTasks: 0,
+        averageScore: 0,
+        completionRate: 0,
+        scoreLabel: '积分',
+        taskLabel: '任务',
+        averageLabel: '平均',
+        rateLabel: '完成率'
+      };
   }
-  
-  // 重新加载统计数据
-  loadStatistics();
-  
-  uni.showToast({
-    title: '测试数据已生成',
-    icon: 'success'
-  });
-}
+});
 
 // 加载统计数据
 function loadStatistics() {
@@ -330,15 +360,6 @@ defineExpose({
       font-size: 44rpx;
       font-weight: bold;
       color: #222;
-    }
-    
-    .test-btn {
-      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-      color: #fff;
-      border: none;
-      border-radius: 20rpx;
-      padding: 12rpx 24rpx;
-      font-size: 24rpx;
     }
   }
   
