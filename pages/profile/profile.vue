@@ -1,33 +1,41 @@
 <template>
   <view class="profile-page">
     <view class="header">
-      <text class="title">个人中心</text>
+      <text class="title">{{ t('profile.title') }}</text>
     </view>
     
     <view class="menu-list">
       <view class="menu-item" @click="goToBackpack">
         <view class="menu-icon">🎒</view>
         <view class="menu-info">
-          <text class="menu-title">奖励背包</text>
-          <text class="menu-desc">查看和使用已兑换奖励</text>
+          <text class="menu-title">{{ t('backpack.title') }}</text>
+          <text class="menu-desc">{{ t('backpack.title') }}</text>
         </view>
         <view class="menu-arrow">></view>
       </view>
       <view class="menu-item" @click="goToMallManage">
         <view class="menu-icon">🏪</view>
         <view class="menu-info">
-          <text class="menu-title">商城管理</text>
-          <text class="menu-desc">管理奖励分类和奖励项</text>
+          <text class="menu-title">{{ t('mall.title') }}</text>
+          <text class="menu-desc">{{ t('mall.title') }}</text>
         </view>
         <view class="menu-arrow">></view>
       </view>
       
-      <!-- 可以在这里添加更多菜单项 -->
+      <view class="menu-item" @click="goToLanguage">
+        <view class="menu-icon">🌐</view>
+        <view class="menu-info">
+          <text class="menu-title">{{ t('settings.language') }}</text>
+          <text class="menu-desc">{{ t('settings.languageTip') }}</text>
+        </view>
+        <view class="menu-arrow">></view>
+      </view>
+      
       <view class="menu-item">
         <view class="menu-icon">⚙️</view>
         <view class="menu-info">
-          <text class="menu-title">设置</text>
-          <text class="menu-desc">应用设置和偏好</text>
+          <text class="menu-title">{{ t('settings.title') }}</text>
+          <text class="menu-desc">{{ t('settings.general') }}</text>
         </view>
         <view class="menu-arrow">></view>
       </view>
@@ -35,8 +43,8 @@
       <view class="menu-item" @click="goToStatistics">
         <view class="menu-icon">📊</view>
         <view class="menu-info">
-          <text class="menu-title">统计</text>
-          <text class="menu-desc">查看任务完成统计</text>
+          <text class="menu-title">{{ t('statistics.title') }}</text>
+          <text class="menu-desc">{{ t('statistics.title') }}</text>
         </view>
         <view class="menu-arrow">></view>
       </view>
@@ -46,6 +54,9 @@
 
 <script setup lang="js">
 import { useScore } from '@/composables/useScore.js';
+import { useI18n } from '@/composables/useI18n.js';
+
+const { t } = useI18n();
 
 // 获取积分信息
 const { score } = useScore();
@@ -62,6 +73,12 @@ function goToMallManage() {
   });
 }
 
+function goToLanguage() {
+  uni.navigateTo({
+    url: '/pages/profile/language'
+  });
+}
+
 function goToStatistics() {
   console.log('点击统计按钮');
   uni.navigateTo({
@@ -72,7 +89,7 @@ function goToStatistics() {
     fail: (err) => {
       console.error('跳转失败:', err);
       uni.showToast({
-        title: '页面跳转失败',
+        title: t('error.operationFailed'),
         icon: 'none'
       });
     }

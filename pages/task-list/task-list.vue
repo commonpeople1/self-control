@@ -2,16 +2,16 @@
   <view class="task-list-page">
     <view class="header">
       <view class="header-top">
-        <text class="title">任务列表</text>
+        <text class="title">{{ t('task.title') }}</text>
         <view class="score-display">
-          <text class="score-label">积分:</text>
+          <text class="score-label">{{ t('score.scoreLabel') }}</text>
           <text class="score-value">{{ score }}</text>
         </view>
       </view>
       <view class="actions">
-        <button class="add-btn" @click="showAdd = true">添加任务</button>
-        <button class="reset-btn" @click="handleResetTasks">重置任务</button>
-        <button class="delete-btn" :disabled="!checkedIds.length" @click="handleDeleteTasks">删除</button>
+        <button class="add-btn" @click="showAdd = true">{{ t('task.addTask') }}</button>
+        <button class="reset-btn" @click="handleResetTasks">{{ t('task.resetTask') }}</button>
+        <button class="delete-btn" :disabled="!checkedIds.length" @click="handleDeleteTasks">{{ t('task.deleteSelected') }}</button>
       </view>
     </view>
     <view class="list">
@@ -29,57 +29,57 @@
         @update:checked="val => toggleCheck(task.id, val)"
         @toggleComplete="handleToggleComplete(task.id)"
       />
-      <view v-if="!tasks.length" class="empty">暂无任务，请添加</view>
+      <view v-if="!tasks.length" class="empty">{{ t('task.emptyTask') }}</view>
     </view>
     <!-- 自定义弹窗和遮罩 -->
     <view v-if="showAdd" class="mask" @click="showAdd = false"></view>
     <view v-if="showAdd" class="add-dialog">
-      <text class="dialog-title">新建任务</text>
+      <text class="dialog-title">{{ t('task.addTask') }}</text>
       <view class="form-row">
-        <text class="label">任务类型</text>
+        <text class="label">{{ t('task.taskType') }}</text>
         <view class="task-type-selector">
           <button 
             class="type-btn" 
             :class="{ active: form.type === 'permanent' }"
             @click="form.type = 'permanent'"
           >
-            长期任务
+            {{ t('task.permanent') }}
           </button>
           <button 
             class="type-btn" 
             :class="{ active: form.type === 'temporary' }"
             @click="form.type = 'temporary'"
           >
-            临时任务
+            {{ t('task.temporary') }}
           </button>
         </view>
       </view>
       <view class="form-row">
-        <text class="label">图标</text>
+        <text class="label">{{ t('task.icon') }}</text>
         <button class="choose-icon-btn" @click="showIconPicker = true">
           <image v-if="form.icon" :src="form.icon" class="icon-preview" />
-          <span v-else>选择图标</span>
+          <span v-else>{{ t('task.chooseIcon') }}</span>
         </button>
       </view>
       <view class="form-row">
-        <text class="label">名称</text>
-        <input v-model="form.name" placeholder="请输入任务名称" />
+        <text class="label">{{ t('task.name') }}</text>
+        <input v-model="form.name" :placeholder="t('task.taskName')" />
       </view>
       <view class="form-row">
-        <text class="label">详情</text>
-        <input v-model="form.detail" placeholder="请输入任务详情" />
+        <text class="label">{{ t('task.detail') }}</text>
+        <input v-model="form.detail" :placeholder="t('task.taskDetail')" />
       </view>
       <view class="form-row">
-        <text class="label">得分</text>
-        <input v-model.number="form.score" type="number" placeholder="请输入得分" />
+        <text class="label">{{ t('task.score') }}</text>
+        <input v-model.number="form.score" type="number" :placeholder="t('task.taskScore')" />
       </view>
       <view class="form-row" v-if="form.type === 'temporary'">
-        <text class="label">提示</text>
-        <text class="temporary-tip">临时任务完成后，第二天将自动从列表中移除</text>
+        <text class="label">{{ t('common.info') }}</text>
+        <text class="temporary-tip">{{ t('task.temporaryTip') }}</text>
       </view>
       <view class="dialog-actions">
-        <button class="cancel" @click="showAdd = false">取消</button>
-        <button class="confirm" :disabled="!form.name || !form.icon" @click="handleAddTask">确定</button>
+        <button class="cancel" @click="showAdd = false">{{ t('common.cancel') }}</button>
+        <button class="confirm" :disabled="!form.name || !form.icon" @click="handleAddTask">{{ t('common.confirm') }}</button>
       </view>
     </view>
     <IconPickerDialog v-model="showIconPicker" :iconCategoryList="iconCategoryList" @select="onSelectIcon" />
@@ -92,6 +92,9 @@ import { useTaskList } from '@/composables/useTaskList.js';
 import { useScore } from '@/composables/useScore.js';
 import TaskItem from '@/components/TaskItem.vue';
 import IconPickerDialog from '@/components/IconPickerDialog.vue';
+import { useI18n } from '@/composables/useI18n.js';
+
+const { t } = useI18n();
 
 const iconCategoryList = [
   {
@@ -167,13 +170,13 @@ function handleToggleComplete(taskId) {
 
 function handleResetTasks() {
   uni.showModal({
-    title: '确认重置',
-    content: '确定要重置所有任务状态吗？此操作不会影响积分。',
+    title: t('task.confirmReset'),
+    content: t('task.resetConfirmText'),
     success: (res) => {
       if (res.confirm) {
         resetAllTasks();
         uni.showToast({
-          title: '任务已重置',
+          title: t('task.taskReset'),
           icon: 'success'
         });
       }

@@ -10,14 +10,18 @@
     </view>
     <view class="score">+{{ score }}</view>
     <view class="badges">
-      <view v-if="type === 'temporary'" class="temporary-badge">临时</view>
-      <view v-if="completed" class="completed-badge">已完成</view>
+      <view v-if="type === 'temporary'" class="temporary-badge">{{ t('task.temporary') }}</view>
+      <view v-if="completed" class="completed-badge">{{ t('task.completed') }}</view>
     </view>
   </view>
 </template>
 
 <script setup lang="js">
 import { defineProps, defineEmits } from 'vue';
+import { useI18n } from '@/composables/useI18n.js';
+
+const { t } = useI18n();
+
 const props = defineProps({
   id: [String, Number],
   icon: String,

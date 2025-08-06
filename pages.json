@@ -20,6 +20,12 @@
 			}
 		},
 		{
+			"path": "pages/profile/language",
+			"style": {
+				"navigationBarTitleText": "语言设置"
+			}
+		},
+		{
 			"path": "pages/mall-manage/mall-manage",
 			"style": {
 				"navigationBarTitleText": "商城管理"
