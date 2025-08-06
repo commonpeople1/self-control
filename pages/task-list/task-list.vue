@@ -82,9 +82,9 @@
           >
             {{ t('task.temporary') }}
           </button>
-        </view>
-        <text class="type-tip">{{ t('task.temporaryTip') }}</text>
+        </view>      
       </view>
+      <text class="type-tip">{{ t('task.temporaryTip') }}</text>
       
       <view class="dialog-actions">
         <button class="cancel" @click="showAdd = false">{{ t('common.cancel') }}</button>
@@ -407,14 +407,14 @@ function handleResetTasks() {
         }
       }
       
-      .type-tip {
+     
+    }
+    .type-tip {
         font-size: 20rpx;
         color: #999;
         margin-top: 8rpx;
         display: block;
       }
-    }
-    
     .dialog-actions {
       display: flex;
       justify-content: flex-end;
