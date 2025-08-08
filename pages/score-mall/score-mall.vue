@@ -7,7 +7,7 @@
         <text class="score-value">{{ score }}</text>
       </view>
     </view>
-    
+
     <view class="content">
       <!-- 左侧分类导航 -->
       <view class="category-nav">
@@ -15,8 +15,8 @@
           <text class="nav-title">{{ t('mall.categoryTitle') }}</text>
         </view>
         <scroll-view class="category-list" scroll-y>
-          <view 
-            v-for="category in categories" 
+          <view
+            v-for="category in categories"
             :key="category"
             class="category-item"
             :class="{ active: selectedCategory === category }"
@@ -29,7 +29,7 @@
           </view>
         </scroll-view>
       </view>
-      
+
       <!-- 右侧奖励列表 -->
       <view class="reward-content">
         <view class="reward-header">
@@ -56,210 +56,208 @@
 </template>
 
 <script setup lang="js">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useRewards } from '@/composables/useRewards.js';
-import { useScore } from '@/composables/useScore.js';
-import RewardItem from '@/components/RewardItem.vue';
-import { useI18n } from '@/composables/useI18n.js';
-import { forceUpdateTabBar } from '@/utils/tabBarI18n.js';
-
-const { t } = useI18n();
-
-const iconCategoryList = [
-  {
-    category: '学习',
-    icons: ['/static/icons/learn1.svg', '/static/svgs/sleep1.svg']
-  },
-  {
-    category: '运动',
-    icons: ['/static/icons/sport1.svg', '/static/svgs/lu1.svg']
-  },
-  {
-    category: '休息',
-    icons: ['/static/icons/sleep1.svg', '/static/icons/sleep2.svg']
-  },
-  {
-    category: '其他',
-    icons: ['/static/icons/icon4.png', '/static/icons/icon5.png']
-  }
-];
-
-// 初始化积分和奖励管理
-const { score } = useScore();
-const { categories, getRewardsByCategory } = useRewards();
-
-const selectedCategory = ref('');
-
-// 计算当前分类的奖励项
-const currentRewards = computed(() => {
-  if (!selectedCategory.value) return [];
-  return getRewardsByCategory(selectedCategory.value);
-});
-
-// 监听语言变化事件
-let localeChangeHandler = null;
-
-onMounted(() => {
-  // 监听语言变化事件
-  localeChangeHandler = (locale) => {
-    console.log('积分商城页面收到语言变化事件:', locale);
-    // 延迟更新tabBar，确保语言切换完成
-    setTimeout(() => {
-      forceUpdateTabBar();
-    }, 100);
-    // 更新页面标题
-    setTimeout(() => {
+  import { ref, computed, onMounted, onUnmounted } from 'vue';
+  import { useRewards } from '@/composables/useRewards.js';
+  import { useScore } from '@/composables/useScore.js';
+  import RewardItem from '@/components/RewardItem.vue';
+  import { useI18n } from '@/composables/useI18n.js';
+  import { updateTabBarTexts } from '@/utils/tabBarI18n.js';
+  import { onShow } from '@dcloudio/uni-app';
+  let languageChangeFlag = false;
+  onShow(() => {
+    if (languageChangeFlag) {
       uni.setNavigationBarTitle({
-        title: t('mall.title')
+        title: t('mall.title'),
       });
-    }, 150);
-  };
-  
-  uni.$on('localeChanged', localeChangeHandler);
-  
-  // 设置页面标题
-  uni.setNavigationBarTitle({
-    title: t('mall.title')
-  });
-});
-
-onUnmounted(() => {
-  // 清理事件监听
-  if (localeChangeHandler) {
-    uni.$off('localeChanged', localeChangeHandler);
-  }
-});
-
-// 处理兑换事件
-function handleExchange(rewardData) {
-  uni.showModal({
-    title: t('mall.exchangeConfirm'),
-    content: t('mall.confirmDeleteReward', { name: rewardData.name, price: rewardData.price }),
-    success: (res) => {
-      if (res.confirm) {
-        // 这里可以添加兑换逻辑，比如扣除积分、记录兑换历史等
-        uni.showToast({
-          title: t('mall.exchangeSuccess'),
-          icon: 'success'
-        });
-      }
+      languageChangeFlag = false;
     }
   });
-}
+  const { t } = useI18n();
+
+  const iconCategoryList = [
+    {
+      category: '学习',
+      icons: ['/static/icons/learn1.svg', '/static/svgs/sleep1.svg'],
+    },
+    {
+      category: '运动',
+      icons: ['/static/icons/sport1.svg', '/static/svgs/lu1.svg'],
+    },
+    {
+      category: '休息',
+      icons: ['/static/icons/sleep1.svg', '/static/icons/sleep2.svg'],
+    },
+    {
+      category: '其他',
+      icons: ['/static/icons/icon4.png', '/static/icons/icon5.png'],
+    },
+  ];
+
+  // 初始化积分和奖励管理
+  const { score } = useScore();
+  const { categories, getRewardsByCategory } = useRewards();
+
+  const selectedCategory = ref('');
+
+  // 计算当前分类的奖励项
+  const currentRewards = computed(() => {
+    if (!selectedCategory.value) return [];
+    return getRewardsByCategory(selectedCategory.value);
+  });
+
+  // 监听语言变化事件
+  let localeChangeHandler = null;
+
+  onMounted(() => {
+    // 监听语言变化事件
+    localeChangeHandler = (locale) => {
+      languageChangeFlag = true;
+      console.log('积分商城页面收到语言变化事件:', locale);
+    };
+    uni.$on('localeChanged', localeChangeHandler);
+    // 设置页面标题
+    uni.setNavigationBarTitle({
+      title: t('mall.title'),
+    });
+  });
+
+  onUnmounted(() => {
+    // 清理事件监听
+    if (localeChangeHandler) {
+      uni.$off('localeChanged', localeChangeHandler);
+    }
+  });
+
+  // 处理兑换事件
+  function handleExchange(rewardData) {
+    uni.showModal({
+      title: t('mall.exchangeConfirm'),
+      content: t('mall.confirmDeleteReward', { name: rewardData.name, price: rewardData.price }),
+      success: (res) => {
+        if (res.confirm) {
+          // 这里可以添加兑换逻辑，比如扣除积分、记录兑换历史等
+          uni.showToast({
+            title: t('mall.exchangeSuccess'),
+            icon: 'success',
+          });
+        }
+      },
+    });
+  }
 </script>
 
 <style lang="scss" scoped>
-.score-mall-page {
-  min-height: 100vh;
-  background: #f7f8fa;
-  
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 32rpx 24rpx 24rpx 24rpx;
-    background: #fff;
-    border-bottom: 2rpx solid #f0f0f0;
-    
-    .title {
-      font-size: 44rpx;
-      font-weight: bold;
-      color: #222;
-    }
-    
-    .score-display {
+  .score-mall-page {
+    min-height: 100vh;
+    background: #f7f8fa;
+
+    .header {
       display: flex;
       align-items: center;
-      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-      padding: 12rpx 20rpx;
-      border-radius: 20rpx;
-      box-shadow: 0 2rpx 8rpx rgba(0,122,255,0.15);
-      
-      .score-label {
-        font-size: 24rpx;
-        color: #fff;
-        margin-right: 8rpx;
-      }
-      
-      .score-value {
-        font-size: 32rpx;
-        font-weight: bold;
-        color: #fff;
-      }
-    }
-  }
-  
-  .content {
-    display: flex;
-    height: calc(100vh - 120rpx);
-    
-    .category-nav {
-      width: 240rpx;
+      justify-content: space-between;
+      padding: 32rpx 24rpx 24rpx 24rpx;
       background: #fff;
-      border-right: 2rpx solid #f0f0f0;
-      
-      .nav-header {
-        padding: 24rpx 20rpx;
-        border-bottom: 2rpx solid #f0f0f0;
-        
-        .nav-title {
-          font-size: 28rpx;
-          font-weight: bold;
-          color: #222;
-        }
+      border-bottom: 2rpx solid #f0f0f0;
+
+      .title {
+        font-size: 44rpx;
+        font-weight: bold;
+        color: #222;
       }
-      
-      .category-list {
-        height: calc(100% - 88rpx);
-        
-        .category-item {
-          padding: 20rpx;
-          border-bottom: 1rpx solid #f0f0f0;
-          transition: background 0.2s;
-          
-          &.active {
-            background: #e3f2fd;
-            color: #007aff;
-          }
-        }
-        
-        .empty-category {
-          text-align: center;
-          color: #bbb;
+
+      .score-display {
+        display: flex;
+        align-items: center;
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        padding: 12rpx 20rpx;
+        border-radius: 20rpx;
+        box-shadow: 0 2rpx 8rpx rgba(0, 122, 255, 0.15);
+
+        .score-label {
           font-size: 24rpx;
-          padding: 40rpx 20rpx;
+          color: #fff;
+          margin-right: 8rpx;
         }
-      }
-    }
-    
-    .reward-content {
-      flex: 1;
-      background: #f7f8fa;
-      
-      .reward-header {
-        padding: 24rpx;
-        background: #fff;
-        border-bottom: 2rpx solid #f0f0f0;
-        
-        .reward-title {
+
+        .score-value {
           font-size: 32rpx;
           font-weight: bold;
-          color: #222;
+          color: #fff;
         }
       }
-      
-      .reward-list {
-        height: calc(100% - 88rpx);
-        padding: 24rpx;
-        
-        .empty-rewards {
-          text-align: center;
-          color: #bbb;
-          font-size: 28rpx;
-          margin-top: 80rpx;
+    }
+
+    .content {
+      display: flex;
+      height: calc(100vh - 120rpx);
+
+      .category-nav {
+        width: 240rpx;
+        background: #fff;
+        border-right: 2rpx solid #f0f0f0;
+
+        .nav-header {
+          padding: 24rpx 20rpx;
+          border-bottom: 2rpx solid #f0f0f0;
+
+          .nav-title {
+            font-size: 28rpx;
+            font-weight: bold;
+            color: #222;
+          }
+        }
+
+        .category-list {
+          height: calc(100% - 88rpx);
+
+          .category-item {
+            padding: 20rpx;
+            border-bottom: 1rpx solid #f0f0f0;
+            transition: background 0.2s;
+
+            &.active {
+              background: #e3f2fd;
+              color: #007aff;
+            }
+          }
+
+          .empty-category {
+            text-align: center;
+            color: #bbb;
+            font-size: 24rpx;
+            padding: 40rpx 20rpx;
+          }
+        }
+      }
+
+      .reward-content {
+        flex: 1;
+        background: #f7f8fa;
+
+        .reward-header {
+          padding: 24rpx;
+          background: #fff;
+          border-bottom: 2rpx solid #f0f0f0;
+
+          .reward-title {
+            font-size: 32rpx;
+            font-weight: bold;
+            color: #222;
+          }
+        }
+
+        .reward-list {
+          height: calc(100% - 88rpx);
+          padding: 24rpx;
+
+          .empty-rewards {
+            text-align: center;
+            color: #bbb;
+            font-size: 28rpx;
+            margin-top: 80rpx;
+          }
         }
       }
     }
   }
-}
-</style> 
+</style>

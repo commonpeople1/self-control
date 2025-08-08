@@ -1,5 +1,5 @@
 <script>
-import { initTabBarI18n, forceUpdateTabBar } from './utils/tabBarI18n.js'
+import { initTabBarI18n, updateTabBarTexts } from './utils/tabBarI18n.js'
 
 export default {
 	onLaunch: function() {
@@ -29,7 +29,7 @@ export default {
 					const tabBarPages = ['pages/task-list/task-list', 'pages/score-mall/score-mall', 'pages/profile/profile']
 					if (tabBarPages.includes(currentPath)) {
 						console.log('当前是tabBar页面，直接更新tabBar')
-						forceUpdateTabBar()
+						updateTabBarTexts()
 					} else {
 						console.log('当前不是tabBar页面，跳转到tabBar页面更新')
 						// 跳转到任务列表页面来更新tabBar
@@ -37,7 +37,7 @@ export default {
 							url: '/pages/task-list/task-list',
 							success: () => {
 								setTimeout(() => {
-									forceUpdateTabBar()
+									updateTabBarTexts()
 								}, 100)
 							}
 						})

@@ -47,7 +47,7 @@
 <script setup lang="js">
 import { ref, computed } from 'vue'
 import { useI18n } from '@/composables/useI18n.js'
-import { forceUpdateTabBar } from '@/utils/tabBarI18n.js'
+import { updateTabBarTexts } from '@/utils/tabBarI18n.js'
 import { setLocale } from '@/utils/i18n.js'
 
 const { t, locale } = useI18n()
@@ -69,7 +69,7 @@ function changeLanguage(lang) {
   // 延迟更新tabBar
   setTimeout(() => {
     console.log('开始更新tabBar...')
-    forceUpdateTabBar()
+    updateTabBarTexts()
   }, 500)
   
   uni.showToast({
@@ -80,7 +80,7 @@ function changeLanguage(lang) {
 
 function testTabBarUpdate() {
   console.log('手动测试tabBar更新')
-  forceUpdateTabBar()
+  updateTabBarTexts()
   
   uni.showToast({
     title: '已尝试更新tabBar',
